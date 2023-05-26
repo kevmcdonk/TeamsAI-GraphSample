@@ -44,7 +44,6 @@ const planner = new AzureOpenAIPlanner({
   endpoint: 'https://openai-woeb2.openai.azure.com/'
 });
 /*
-/*
 const moderator = new OpenAIModerator({
   apiKey: config.openAIKey,
   moderate: 'both'
@@ -57,7 +56,7 @@ const app = new Application<ApplicationTurnState>({
   storage,
   ai: {
       planner,
-      moderator,
+      // moderator,
       promptManager,
       prompt: 'chat',
       history: {
@@ -66,6 +65,9 @@ const app = new Application<ApplicationTurnState>({
   }
 });
 
+const graphService = new GraphService();
+
+/*
 app.ai.action(AI.FlaggedInputActionName, async (context, state, data) => {
   await context.sendActivity(`I'm sorry your message was flagged: ${JSON.stringify(data)}`);
   return false;
