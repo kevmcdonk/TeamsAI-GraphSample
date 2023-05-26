@@ -12,6 +12,8 @@ import {
   MemoryStorage,
 } from "botbuilder";
 
+import { GraphService } from "./services/graphService";
+
 // This bot's main dialog.
 import { TeamsBot } from "./teamsBot";
 import config from "./config";
@@ -37,10 +39,11 @@ const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(
 console.log('Using OpenAI key: ' + config.openAIKey);
 const planner = new AzureOpenAIPlanner({
   apiKey: config.openAIKey,
-  defaultModel: 'play',
+  defaultModel: 'GPT35Completions',
   logRequests: true,
-  endpoint: 'https://openai-woeb2.openai.azure.com'
+  endpoint: 'https://openai-woeb2.openai.azure.com/'
 });
+/*
 /*
 const moderator = new OpenAIModerator({
   apiKey: config.openAIKey,
@@ -54,7 +57,7 @@ const app = new Application<ApplicationTurnState>({
   storage,
   ai: {
       planner,
-      //moderator,
+      moderator,
       promptManager,
       prompt: 'chat',
       history: {
@@ -62,7 +65,7 @@ const app = new Application<ApplicationTurnState>({
       }
   }
 });
-/*
+
 app.ai.action(AI.FlaggedInputActionName, async (context, state, data) => {
   await context.sendActivity(`I'm sorry your message was flagged: ${JSON.stringify(data)}`);
   return false;
@@ -120,3 +123,11 @@ server.post("/api/messages", async (req, res) => {
     await app.run(context);
   });
 });
+
+app.ai.action('readMail', async (context, state) => {
+  //var id = createNewWorkItem(state, data);
+  graphService.getUsersMail();
+  await context.sendActivity(`Not doing anything yet`);
+  return false;
+});
+
