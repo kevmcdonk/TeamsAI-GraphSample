@@ -6,7 +6,13 @@ export class GraphService {
     private graphClient: Client;
 
     constructor() {
-        const appCredential = new AppCredential(authConfig)
+        /*loadConfiguration();
+        dialogs.add(
+        new TeamsBotSsoPrompt("TeamsBotSsoPrompt", {
+            scopes: ["User.Read"],
+        })
+        );*/
+        const appCredential = new AppCredential(authConfig);
         this.graphClient = createMicrosoftGraphClientWithCredential(appCredential);
     }
 
@@ -47,3 +53,4 @@ export class GraphService {
             .get();
     }
 }
+

@@ -16,7 +16,7 @@ Current list names:
 Examples: 
 
 Human: show my emails
-AI: DO readMail THEN SAY Here are your emails
+AI: DO readMail THEN SAY Here are your emails {{readMail}}
 
 Instructions:
 
