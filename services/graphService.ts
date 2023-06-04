@@ -1,18 +1,18 @@
-import { AppCredential, createMicrosoftGraphClient, createMicrosoftGraphClientWithCredential } from "@microsoft/teamsfx";
+import { AppCredential, OnBehalfOfUserCredential, createMicrosoftGraphClient, createMicrosoftGraphClientWithCredential } from "@microsoft/teamsfx";
 import { Client } from "@microsoft/microsoft-graph-client";
 import authConfig from "../authConfig";
 
 export class GraphService {
     private graphClient: Client;
 
-    constructor() {
+    constructor(token: string) {
         /*loadConfiguration();
         dialogs.add(
         new TeamsBotSsoPrompt("TeamsBotSsoPrompt", {
             scopes: ["User.Read"],
         })
         );*/
-        const appCredential = new AppCredential(authConfig);
+        const appCredential = new OnBehalfOfUserCredential(token, authConfig);
         this.graphClient = createMicrosoftGraphClientWithCredential(appCredential);
     }
 

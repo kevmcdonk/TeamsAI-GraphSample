@@ -33,6 +33,7 @@ import {
 import authConfig from "./authConfig";
 import { GraphService } from "./services/graphService";
 import { start } from "repl";
+import { MainDialog } from "./dialogs/MainDialog";
 
 export interface DataInterface {
   likeCount: number;
@@ -41,43 +42,16 @@ export interface DataInterface {
 type ApplicationTurnState = DefaultTurnState<ConversationState>;
 
 // Create AI components
-const planner = new AzureOpenAIPlanner({
-  apiKey: config.openAIKey,
-  defaultModel: 'GPT35Completions',
-  logRequests: true,
-  endpoint: 'https://openai-woeb2.openai.azure.com/'
-});
 
-const promptManager = new DefaultPromptManager<ApplicationTurnState>(path.join(__dirname, './prompts'));
-// Define storage and application
-const storage = new MemoryStorage();
-const app = new Application<ApplicationTurnState>({
-  storage,
-  ai: {
-      planner,
-      // moderator,
-      promptManager,
-      prompt: 'chat',
-      history: {
-          assistantHistoryType: 'text'
-      }
-  }
-});
-const graphService = new GraphService();
-
-app.message('/history', async (context, state) => {
-  const history = ConversationHistory.toString(state, 2000, '\n\n');
-  await context.sendActivity(history);
-});
-
+/*
 app.ai.prompts.addFunction('readMail', async (context, state) => {
   //var id = createNewWorkItem(state, data);
   // Note that the bot doesn't run so all that bot stuff here is pointless...
   // So how do I get dialogs...
   await context.sendActivity(`Here's your email`);
-  return graphService.getUsersMail();
+  //return graphService.getUsersMail();
 });
-
+*/
 
 export class TeamsBot extends TeamsActivityHandler {
   // record the likeCount
@@ -87,10 +61,41 @@ export class TeamsBot extends TeamsActivityHandler {
   conversationState: BotState;
   userState: BotState;
   starterDialog: WaterfallDialog;
+  mainDialog: MainDialog;
   dialogState: any;
+  app: Application<ApplicationTurnState>;
 
   constructor(conversationState: BotState, userState: BotState, dialog: Dialog) {
     super();
+
+    const planner = new AzureOpenAIPlanner({
+      apiKey: config.openAIKey,
+      defaultModel: 'GPT35Completions',
+      logRequests: true,
+      endpoint: config.openAIEndpoint,
+    });
+    
+    const promptManager = new DefaultPromptManager<ApplicationTurnState>(path.join(__dirname, './prompts'));
+    // Define storage and application
+    const storage = new MemoryStorage();
+    this.app = new Application<ApplicationTurnState>({
+      storage,
+      ai: {
+          planner,
+          // moderator,
+          promptManager,
+          prompt: 'chat',
+          history: {
+              assistantHistoryType: 'text'
+          }
+      }
+    });
+    //const graphService = new GraphService("UPDATEME");
+    
+    this.app.message('/history', async (context, state) => {
+      const history = ConversationHistory.toString(state, 2000, '\n\n');
+      await context.sendActivity(history);
+    });
 
     this.likeCountObj = { likeCount: 0 };
 
@@ -115,11 +120,14 @@ export class TeamsBot extends TeamsActivityHandler {
        }
      },
     ]);
-    dialogs.add(this.starterDialog);  
+    dialogs.add(this.starterDialog);
+    this.mainDialog = new MainDialog();
+    dialogs.add(this.mainDialog);
     this.conversationDataAccessor = conversationState.createProperty(GraphTokenProperty);  
 
     this.onMessage(async (context, next) => {
       console.log("Running with Message Activity.");
+      /*
       const conversationData = await this.conversationDataAccessor.get(
         context, { promptedForUserName: false });
       if (this.graphToken == null) {
@@ -128,7 +136,7 @@ export class TeamsBot extends TeamsActivityHandler {
           
           const results = await dc.continueDialog();
           if (results.status === DialogTurnStatus.empty) {
-              const step = await dc.beginDialog("taskNeedingLogin");
+              const step = await dc.beginDialog("MainDialog");
               const token = step.result;
               if (token) {
                 this.graphToken = token;
@@ -138,7 +146,7 @@ export class TeamsBot extends TeamsActivityHandler {
               }
           }
         }
-      }
+      }*/
 
       let txt = context.activity.text;
       const removedMentionText = TurnContext.removeRecipientMention(
@@ -149,33 +157,7 @@ export class TeamsBot extends TeamsActivityHandler {
         txt = removedMentionText.toLowerCase().replace(/\n|\r/g, "").trim();
       }
 
-      // Trigger command by IM text
-      switch (txt) {
-        case "welcome": {
-          const card =
-            AdaptiveCards.declareWithoutData(rawWelcomeCard).render();
-          await context.sendActivity({
-            attachments: [CardFactory.adaptiveCard(card)],
-          });
-          break;
-        }
-        case "learn": {
-          this.likeCountObj.likeCount = 0;
-          const card = AdaptiveCards.declare<DataInterface>(
-            rawLearnCard
-          ).render(this.likeCountObj);
-          await context.sendActivity({
-            attachments: [CardFactory.adaptiveCard(card)],
-          });
-          break;
-        }
-        /**
-         * case "yourCommand": {
-         *   await context.sendActivity(`Add your response here!`);
-         *   break;
-         * }
-         */
-      }
+      
 
       // By calling next() you ensure that the next BotHandler is run.
       await next();
@@ -197,6 +179,9 @@ export class TeamsBot extends TeamsActivityHandler {
     });
   }
 
+  public override async run (context: TurnContext) {
+    this.app.run(context);
+  }
   // Invoked when an action is taken on an Adaptive Card. The Adaptive Card sends an event to the Bot and this
   // method handles that event.
   async onAdaptiveCardInvoke(
