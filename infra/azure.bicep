@@ -72,6 +72,7 @@ module azureBotRegistration './botRegistration/azurebot.bicep' = {
   params: {
     resourceBaseName: resourceBaseName
     botAadAppClientId: botAadAppClientId
+    botAadAppClientSecret: botAadAppClientSecret
     botAppDomain: webApp.properties.defaultHostName
     botDisplayName: botDisplayName
   }

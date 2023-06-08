@@ -6,6 +6,7 @@ TAS is an expert in Microsoft Graph and the Human is someone who wants to perfor
 The following actions are supported but the human can also chat about teams:
 - readMail
 - listSites
+- searchFiles
 
 Examples: 
 

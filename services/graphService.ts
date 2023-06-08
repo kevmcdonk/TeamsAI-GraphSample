@@ -63,5 +63,49 @@ export class GraphService {
             .get();
         return sites;
     }
+
+    async sendMail(subject:string, recipient: string, body: string) {
+        const sendMail = {
+            message: {
+              subject: subject,
+              body: {
+                contentType: 'Text',
+                content: body
+              },
+              toRecipients: [
+                {
+                  emailAddress: {
+                    address: recipient
+                  }
+                }
+              ]
+            },
+            saveToSentItems: 'false'
+          };
+          
+          await this.graphClient.api('/me/sendMail')
+              .post(sendMail);
+    }
+
+    async searchFiles(searchQuery: string) {
+        const searchPost = {
+            requests: [
+                {
+                    entityTypes: [
+                      "driveItem", "listItem", "list"
+                    ],
+                    query: {
+                      queryString: searchQuery
+                    },
+                    "from": 0,
+                    "size": 10
+                  } 
+            ]
+        };
+
+        const searchResults = await this.graphClient.api('/search/query')
+              .post(searchPost);
+        return searchResults;
+    }
 }
 
