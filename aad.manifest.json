@@ -1,0 +1,121 @@
+{
+	"id": "${{OBJECT_ID}}",
+	"acceptMappedClaims": null,
+	"accessTokenAcceptedVersion": 2,
+	"addIns": [],
+	"allowPublicClient": null,
+	"appId": "${{BOT_ID}}",
+	"appRoles": [],
+	"oauth2AllowUrlPathMatching": false,
+	"createdDateTime": "2023-05-24T09:05:29Z",
+	"description": null,
+	"certification": null,
+	"disabledByMicrosoftStatus": null,
+	"groupMembershipClaims": null,
+	"identifierUris": [
+        		"api://botid-${{BOT_ID}}"
+	],
+	"informationalUrls": {
+		"termsOfService": null,
+		"support": null,
+		"privacy": null,
+		"marketing": null
+	},
+	"keyCredentials": [],
+	"knownClientApplications": [],
+	"logoUrl": null,
+	"logoutUrl": null,
+	"name": "TeamsAI-GraphSample-{{TEAMSFX_ENV}}",
+	"notes": null,
+	"oauth2AllowIdTokenImplicitFlow": false,
+	"oauth2AllowImplicitFlow": false,
+	"oauth2Permissions": [
+		{
+			"adminConsentDescription": "To allow the Bot to perform your actions, the following consents are required:\n- Read Sites\n- Read mails",
+			"adminConsentDisplayName": "Teams can access various details to provide Graph access",
+			"id": "4581b2cd-7d69-4cf3-86a1-045028208109",
+			"isEnabled": true,
+			"lang": null,
+			"origin": "Application",
+			"type": "User",
+			"userConsentDescription": "To allow the Bot to provide you with the right information, you are required to provide consent to read your sites and mails.",
+			"userConsentDisplayName": "Read your sites and your mails",
+			"value": "access_as_user"
+		}
+	],
+	"oauth2RequirePostResponse": false,
+	"optionalClaims": null,
+	"orgRestrictions": [],
+	"parentalControlSettings": {
+		"countriesBlockedForMinors": [],
+		"legalAgeGroupRule": "Allow"
+	},
+	"passwordCredentials": [
+		{
+			"customKeyIdentifier": null,
+			"endDate": "2025-05-24T09:05:30.5481774Z",
+			"keyId": "93b47c79-e299-4cec-b4a3-a05303d575e2",
+			"startDate": "2023-05-24T09:05:30.5481774Z",
+			"value": null,
+			"createdOn": "2023-05-24T09:05:30.8341778Z",
+			"hint": "ywd",
+			"displayName": "default"
+		}
+	],
+	"preAuthorizedApplications": [
+		{
+			"appId": "5e3ce6c0-2b1f-4285-8d4b-75ee78787346",
+			"permissionIds": [
+				"4581b2cd-7d69-4cf3-86a1-045028208109"
+			]
+		},
+		{
+			"appId": "1fec8e78-bce4-4aaf-ab1b-5451cc387264",
+			"permissionIds": [
+				"4581b2cd-7d69-4cf3-86a1-045028208109"
+			]
+		}
+	],
+	"publisherDomain": "Mcd79.com",
+	"replyUrlsWithType": [],
+	"requiredResourceAccess": [
+		{
+			"resourceAppId": "00000003-0000-0000-c000-000000000000",
+			"resourceAccess": [
+				{
+					"id": "14dad69e-099b-42c9-810b-d002981feec1",
+					"type": "Scope"
+				},
+				{
+					"id": "570282fd-fa5c-430d-a7fd-fc8dc98a9dca",
+					"type": "Scope"
+				},
+				{
+					"id": "7427e0e9-2fba-42fe-b0c0-848c9e6a8182",
+					"type": "Scope"
+				},
+				{
+					"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+					"type": "Scope"
+				},
+				{
+					"id": "205e70e5-aba6-4c52-a976-6d2d46c48043",
+					"type": "Scope"
+				},
+				{
+					"id": "37f7f235-527c-4136-accd-4a02d197296e",
+					"type": "Scope"
+				},
+				{
+					"id": "64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0",
+					"type": "Scope"
+				}
+			]
+		}
+	],
+	"samlMetadataUrl": null,
+	"signInUrl": null,
+	"signInAudience": "AzureADMultipleOrgs",
+	"tags": [],
+	"tokenEncryptionKeyId": null
+}

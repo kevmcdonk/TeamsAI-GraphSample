@@ -1,0 +1,28 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.4",
+   "body": [
+        {
+            "type": "TextBlock",
+            "text": "${name}",
+            "size": "Large",
+            "weight": "Bolder",
+            "style": "heading",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": " ${webUrl} ",
+            "isSubtle": true,
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "${description}",
+            "isSubtle": true,
+            "spacing": "None",
+            "wrap": true
+        }
+    ]
+}

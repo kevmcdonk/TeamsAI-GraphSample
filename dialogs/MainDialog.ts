@@ -1,5 +1,5 @@
 // with thanks to https://github.com/garrytrinder/msteams-bot-sso
-import { Activity, Attachment, AttachmentLayoutTypes, CardFactory, HeroCard, InputHints, MessageFactory, StatePropertyAccessor, TurnContext } from 'botbuilder';
+import { Activity, Attachment, AttachmentLayoutTypes, BotState, CardFactory, HeroCard, InputHints, MessageFactory, StatePropertyAccessor, TurnContext, UserState } from 'botbuilder';
 
 import {
     ComponentDialog,
@@ -24,12 +24,14 @@ const MAIN_DIALOG = 'MainDialog';
 const OAUTH_PROMPT = 'OAuthPrompt';
 
 export class MainDialog extends ComponentDialog {
+    _userState: BotState;
 
-    constructor() {
+    constructor(userState: BotState) {
         super('MainDialog');
         console.log('Main Dialog constructor');
         // Define the main dialog and its related components.
         // This is a sample "book a flight" dialog.
+        this._userState = userState;
 
         this.addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
             this.promptStep.bind(this),
@@ -80,10 +82,8 @@ export class MainDialog extends ComponentDialog {
         if (!tokenResponse || !tokenResponse.token) {
             await stepContext.context.sendActivity('Login was not successful please try again.');
         } else {
-            const client = new GraphService(tokenResponse.token);
-            const me = await client.getUsersMail();
-            await stepContext.context.sendActivity(`Here's your mail ${me}`);
-            return await stepContext.prompt(CONFIRM_PROMPT, 'Would you like to view your token?');
+            this._userState["GraphToken"] = tokenResponse;
+            this._userState.saveChanges(stepContext);
         }
         return await stepContext.endDialog();
     }

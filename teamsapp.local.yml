@@ -18,7 +18,7 @@ provision:
   - uses: botAadApp/create
     with:
       # The Azure Active Directory application's display name
-      name: TeamsAI-GraphSample-${{TEAMSFX_ENV}}
+      name: TeamsAI-GraphSample
     writeToEnvironmentFile:
       # The Azure Active Directory application's client id created for bot.
       botId: BOT_ID
@@ -61,6 +61,17 @@ provision:
     with:
       # Relative path to this file. This is the path for built zip file.
       appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
+  - uses: aadApp/create
+    with:
+      name: TeamsAI-GraphSample # Required. when you run aadApp/update, the AAD app name will be updated based on the definition in manifest. If you don't want to change the name, make sure the name in AAD manifest is the same with the name defined here.
+      generateClientSecret: true # Required. If the value is false, the action will not generate client secret for you
+      signInAudience: "AzureADMyOrg" # Required. Specifies what Microsoft accounts are supported for the current application. Supported values are: `AzureADMyOrg`, `AzureADMultipleOrgs`, `AzureADandPersonalMicrosoftAccount`, `PersonalMicrosoftAccount`.
+    writeToEnvironmentFile: # Write the information of created resources into environment file for the specified environment variable(s).
+      clientId: CLIENT_ID # Required. The client (application) ID of AAD application. The action will refer the environment variable defined here to determine whether to create a new AAD app.
+      clientSecret: SECRET_CLIENT_SECRET # Required when `generateClientSecret` is `true`. The action will refer the environment variable defined here to determine whether to create a new client secret. It's recommended to add `SECRET_` prefix to the environment variable name so it will be stored to the .env.{envName}.user environment file.
+      objectId: OBJECT_ID # Required. The object ID of AAD application
+      tenantId: TENANT_ID # Optional. The tenant ID of AAD tenant
+      authorityHost: AUTHORITY_HOST # Optional. The host name of AAD authority
 
 deploy:
   # Run npm command
@@ -79,4 +90,7 @@ deploy:
         AUTHORITY_HOST: ${{AUTHORITY_HOST}}
         CLIENT_ID: ${{CLIENT_ID}}
         TENANT_ID: ${{TENANT_ID}}
-        CLIENT_SECRET: ${{CLIENT_SECRET}}
+        SECRET_CLIENT_SECRET: ${{SECRET_CLIENT_SECRET}}
+        OPENAI_ENDPOINT: ${{OPENAI_ENDPOINT}}
+        OBJECT_ID: ${{OBJECT_ID}}
+        OAUTH_CONNECTION_NAME: ${{OAUTH_CONNECTION_NAME}}

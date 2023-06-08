@@ -61,5 +61,10 @@
         "identity",
         "messageTeamMembers"
     ],
-    "validDomains": []
+    "validDomains": ["token.botframework.com",
+    "login.microsoftonline.com"],
+    "webApplicationInfo": {
+        "id": "${{BOT_ID}}",
+        "resource": "api://botid-${{BOT_ID}}"
+      }
 }

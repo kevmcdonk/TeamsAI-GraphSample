@@ -1,19 +1,22 @@
 import { AppCredential, OnBehalfOfUserCredential, createMicrosoftGraphClient, createMicrosoftGraphClientWithCredential } from "@microsoft/teamsfx";
 import { Client } from "@microsoft/microsoft-graph-client";
-import authConfig from "../authConfig";
 
 export class GraphService {
     private graphClient: Client;
+    private _token: string;
+
 
     constructor(token: string) {
-        /*loadConfiguration();
-        dialogs.add(
-        new TeamsBotSsoPrompt("TeamsBotSsoPrompt", {
-            scopes: ["User.Read"],
-        })
-        );*/
-        const appCredential = new OnBehalfOfUserCredential(token, authConfig);
-        this.graphClient = createMicrosoftGraphClientWithCredential(appCredential);
+        if (!token || !token.trim()) {
+            throw new Error('SimpleGraphClient: Invalid token received.');
+        }
+
+        this._token = token;
+        this.graphClient = Client.init({
+            authProvider: (done) => {
+                done(null, this._token); // First parameter takes an error if you can't get an access token.
+            }
+        });
     }
 
     async createConnection(connection, connectorTicket: string) {
@@ -48,9 +51,17 @@ export class GraphService {
     }
 
     async getUsersMail() {
-        await this.graphClient.api("/me/messages")
+        const mails = await this.graphClient.api("/me/messages")
             .version("beta")
             .get();
+        return mails;
+    }
+
+    async getSites() {
+        const sites = await this.graphClient.api("/sites?search=*")
+            .version("beta")
+            .get();
+        return sites;
     }
 }
 

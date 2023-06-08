@@ -35,3 +35,26 @@ resource botServiceMsTeamsChannel 'Microsoft.BotService/botServices/channels@202
     channelName: 'MsTeamsChannel'
   }
 }
+
+resource botServicesMicrosoftGraphConnection 'Microsoft.BotService/botServices/connections@2022-09-15' = {
+  parent: botService
+  name: 'MicrosoftGraph'
+  location: 'global'
+  properties: {
+    serviceProviderDisplayName: 'Azure Active Directory v2'
+    serviceProviderId: '30dd229c-58e3-4a48-bdfd-91ec48eb906c'
+    clientId: botAadAppClientId
+    clientSecret: botAddAppClientSecret
+    scopes: 'email offline_access openid profile User.Read Mail.Read Sites.Read.All'
+    parameters: [
+      {
+        key: 'tenantID'
+        value: 'common'
+      }
+      {
+        key: 'tokenExchangeUrl'
+        value: 'api://botid-${botAadAppClientId}'
+      }
+    ]
+  }
+}

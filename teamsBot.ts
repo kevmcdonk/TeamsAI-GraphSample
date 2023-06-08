@@ -39,20 +39,6 @@ export interface DataInterface {
   likeCount: number;
 }
 
-type ApplicationTurnState = DefaultTurnState<ConversationState>;
-
-// Create AI components
-
-/*
-app.ai.prompts.addFunction('readMail', async (context, state) => {
-  //var id = createNewWorkItem(state, data);
-  // Note that the bot doesn't run so all that bot stuff here is pointless...
-  // So how do I get dialogs...
-  await context.sendActivity(`Here's your email`);
-  //return graphService.getUsersMail();
-});
-*/
-
 export class TeamsBot extends TeamsActivityHandler {
   // record the likeCount
   likeCountObj: { likeCount: number };
@@ -63,39 +49,10 @@ export class TeamsBot extends TeamsActivityHandler {
   starterDialog: WaterfallDialog;
   mainDialog: MainDialog;
   dialogState: any;
-  app: Application<ApplicationTurnState>;
+  
 
   constructor(conversationState: BotState, userState: BotState, dialog: Dialog) {
     super();
-
-    const planner = new AzureOpenAIPlanner({
-      apiKey: config.openAIKey,
-      defaultModel: 'GPT35Completions',
-      logRequests: true,
-      endpoint: config.openAIEndpoint,
-    });
-    
-    const promptManager = new DefaultPromptManager<ApplicationTurnState>(path.join(__dirname, './prompts'));
-    // Define storage and application
-    const storage = new MemoryStorage();
-    this.app = new Application<ApplicationTurnState>({
-      storage,
-      ai: {
-          planner,
-          // moderator,
-          promptManager,
-          prompt: 'chat',
-          history: {
-              assistantHistoryType: 'text'
-          }
-      }
-    });
-    //const graphService = new GraphService("UPDATEME");
-    
-    this.app.message('/history', async (context, state) => {
-      const history = ConversationHistory.toString(state, 2000, '\n\n');
-      await context.sendActivity(history);
-    });
 
     this.likeCountObj = { likeCount: 0 };
 
@@ -121,7 +78,7 @@ export class TeamsBot extends TeamsActivityHandler {
      },
     ]);
     dialogs.add(this.starterDialog);
-    this.mainDialog = new MainDialog();
+    this.mainDialog = new MainDialog(userState);
     dialogs.add(this.mainDialog);
     this.conversationDataAccessor = conversationState.createProperty(GraphTokenProperty);  
 
@@ -179,9 +136,6 @@ export class TeamsBot extends TeamsActivityHandler {
     });
   }
 
-  public override async run (context: TurnContext) {
-    this.app.run(context);
-  }
   // Invoked when an action is taken on an Adaptive Card. The Adaptive Card sends an event to the Bot and this
   // method handles that event.
   async onAdaptiveCardInvoke(
