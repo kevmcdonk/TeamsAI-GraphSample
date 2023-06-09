@@ -186,9 +186,10 @@ function createMailCards(mailResponse): Attachment[] {
 //app.ai.prompts.addFunction("listSites", async (context, state) => {
 app.ai.action(
   "listSites",
-  async (context: TurnContext, state: ApplicationTurnState) => {
+  async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
+    const searchQuery = data.query;
     const graphService = new GraphService(state.temp.value.authToken);
-    const mail = await graphService.getSites();
+    const mail = await graphService.getSites(searchQuery);
     const siteCards = createSiteCards(mail);
 
     await context.sendActivity({
@@ -215,9 +216,10 @@ function createSiteCards(siteResponse): Attachment[] {
 
 app.ai.action(
   "searchFiles",
-  async (context: TurnContext, state: ApplicationTurnState) => {
+  async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
+    const searchQuery = data.query;
     const graphService = new GraphService(state.temp.value.authToken);
-    const searchResults = await graphService.searchFiles("Viva");
+    const searchResults = await graphService.searchFiles(searchQuery);
     const searchResultCards = createSearchCards(searchResults);
 
     await context.sendActivity({
@@ -228,6 +230,7 @@ app.ai.action(
     return true;
   }
 );
+
 
 function createSearchCards(siteResponse): Attachment[] {
   let cards = [];
@@ -274,8 +277,6 @@ server.listen(process.env.port || process.env.PORT || 3978, () => {
 // Listen for incoming requests.
 server.post("/api/messages", async (req, res) => {
   await adapter.process(req, res, async (context) => {
-    // Change this to use Bot if not authenticated and then use app once authenticated
-    //if (userState["GraphToken"] && userState["GraphToken"]!="") {
       console.log("incoming!");
       try {
     await app.run(context);
@@ -283,9 +284,5 @@ server.post("/api/messages", async (req, res) => {
       catch(e) {
         console.log(e);
       }
-    //}
-    //else {
-    //  await bot.run(context);
-    //}
   });
 });

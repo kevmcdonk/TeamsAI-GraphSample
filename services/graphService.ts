@@ -57,8 +57,8 @@ export class GraphService {
         return mails;
     }
 
-    async getSites() {
-        const sites = await this.graphClient.api("/sites?search=*")
+    async getSites(query: string) {
+        const sites = await this.graphClient.api("/sites?search="+query)
             .version("beta")
             .get();
         return sites;
