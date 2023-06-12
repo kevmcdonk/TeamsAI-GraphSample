@@ -5,7 +5,7 @@ Just imagine if you could shout that at your phone and have it reply with those 
 
 This is a Bot built using the Teams Toolkit with the Teams AI library and utilising Azure Open AI to provide that backend sparkle. To be honest, the really exciting thing in this project is the use of the OAuth to connect to the Graph with Teams AI. That is what should get you excited as that can happen with all sorts of APIs.
 
-![Sample demo](./docs/TeamsAI-GraphSample-Demo.gif)
+<img src="./docs/TeamsAI-GraphSample-Demo.gif" alt="Demo" width="200"/>
 
 ## Prerequisites
 
