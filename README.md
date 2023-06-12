@@ -1,14 +1,24 @@
-# How to use this Bot HelloWorld app
+# Bringing natural language to the world of the Graph
 
-A bot, chatbot, or conversational bot is an app that responds to simple commands sent in chat and replies in meaningful ways. Examples of bots in everyday use include: bots that notify about build failures, bots that provide information about the weather or bus schedules, or provide travel information. A bot interaction can be a quick question and answer, or it can be a complex conversation. Being a cloud application, a bot can provide valuable and secure access to cloud services and corporate resources.
+"Dammit, why can't I just see my last ten emails"
+Just imagine if you could shout that at your phone and have it reply with those emails. But not just that, what if it could also find that file that had that thingy about the last project that you worked on. That's the power of Azure Open AI, brought to you with the Teams AI library.
 
-This is a simple hello world application with Bot capabilities.
+This is a Bot built using the Teams Toolkit with the Teams AI library and utilising Azure Open AI to provide that backend sparkle. To be honest, the really exciting thing in this project is the use of the OAuth to connect to the Graph with Teams AI. That is what should get you excited as that can happen with all sorts of APIs.
+
+![Sample demo](./docs/TeamsAI-GraphSample-Demo.gif)
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/), supported versions: 16, 18
 - An M365 account. If you do not have M365 account, apply one from [M365 developer program](https://developer.microsoft.com/en-us/microsoft-365/dev-program)
 - [Teams Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) version 5.0.0 and higher or [TeamsFx CLI](https://aka.ms/teamsfx-cli)
+- An Azure OpenAI license key - see https://azure.microsoft.com/en-us/products/cognitive-services/openai-service/ and https://learn.microsoft.com/en-us/azure/cognitive-services/openai/how-to/chatgpt?pivots=programming-language-chat-completions.
+
+## Setting up OAuth
+
+My hope is to automate this more as I try out more things but for right now, there are still some manual steps needed. The first is to set up a new App Registration as per the instructions at https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/how-to/authentication/tab-sso-register-aad#to-register-a-new-app-in-azure-ad. This app registration should be set up with the delegated Graph API calls that are used in the Bot, currently Mail.Read and Sites.Read.All.
+
+Once set up, debug the project as per the instructions below - however, it won't work yet. This will set up items including registering a Bot at https://dev.botframework.com. Unfortunately, there is no way to set up the OAuth in this so you need to find the registered bot and migrate it to Azure. Once there, you can configure the OAuth settings for the previously set up App Registration, following the guidance at https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/authentication/bot-sso-register-aad?tabs=windows#to-configure-application-id-uri-for-your-app. 
 
 ## Debug
 
