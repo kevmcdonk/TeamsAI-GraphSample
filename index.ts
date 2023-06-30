@@ -10,7 +10,6 @@ import {
   ConfigurationBotFrameworkAuthentication,
   TurnContext,
   MemoryStorage,
-  ConversationState,
   UserState,
   CardFactory,
   Attachment,
@@ -25,6 +24,7 @@ import {
   OpenAIModerator,
   AzureOpenAIPlanner,
   AI,
+  DefaultConversationState,
 } from "@microsoft/teams-ai";
 import { OAuthPromptSettings } from "botbuilder-dialogs";
 import { MailData } from "./models/mailData";
@@ -48,6 +48,13 @@ import searchResultCard from "./adaptiveCards/searchResult.json";
 
 type ApplicationTurnState = DefaultTurnState<ConversationState>;
 type TData = Record<string, any>;
+
+interface ConversationState extends DefaultConversationState {
+  searchResults: any;
+  documentText: string;
+  events: any;
+}
+
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 
@@ -109,12 +116,9 @@ const dialog = new TeamsBotSsoPrompt(
 );
 
 const memoryStorage = new MemoryStorage();
-const convoState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 //this.dialogState = this.conversationState.createProperty("DialogState");
 
-// Create the bot that will handle incoming messages.
-const bot = new TeamsBot(convoState, userState, dialog);
 console.log("OpenAIEndpoint: " + config.openAIEndpoint);
 console.log("OpenAIKey: " + config.openAIKey);
 const planner = new AzureOpenAIPlanner({
@@ -135,7 +139,7 @@ const app = new Application<ApplicationTurnState>({
     planner,
     // moderator,
     promptManager,
-    prompt: "readMail",
+    prompt: "chat",
     history: {
       assistantHistoryType: "text",
     },
@@ -152,6 +156,7 @@ app.message("/history", async (context, state) => {
   const history = ConversationHistory.toString(state, 2000, "\n\n");
   await context.sendActivity(history);
 });
+
 
 app.ai.action(
   "readMail",
@@ -214,20 +219,50 @@ function createSiteCards(siteResponse): Attachment[] {
   return cards;
 }
 
+
 app.ai.action(
   "searchFiles",
   async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
     const searchQuery = data.query;
     const graphService = new GraphService(state.temp.value.authToken);
     const searchResults = await graphService.searchFiles(searchQuery);
-    const searchResultCards = createSearchCards(searchResults);
+    /*const searchResultCards = createSearchCards(searchResults);
 
     await context.sendActivity({
       text: "Here's your search results:",
       attachments: searchResultCards,
       attachmentLayout: AttachmentLayoutTypes.Carousel,
-    });
+    });*/
+    state.conversation.value.searchResults = searchResults;
+    await app.ai.chain(context, state, 'summarizeSearch');
     return true;
+  }
+);
+
+app.ai.action(
+  "summariseDocument",
+  async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
+    const filePath = data.docLink;
+    const graphService = new GraphService(state.temp.value.authToken);
+    let fileContents = await graphService.getFileContents('/sites/Conferences', '/general/commsverse/2023/No%20desk,%20no%20problem%20-%20empowering%20Frontline%20workers%20with%20Microsoft%20365.pptx');
+    state.conversation.value.documentText = fileContents;
+    await app.ai.chain(context, state, 'summarizeDocument');
+    
+    // End the current chain
+    return false;
+  }
+);
+
+app.ai.action(
+  "analyzeCalendar",
+  async (context: TurnContext, state: ApplicationTurnState) => {
+    const graphService = new GraphService(state.temp.value.authToken);
+    let events = await graphService.getNextTwoWeeksCalendars();
+    state.conversation.value.events = events;
+    await app.ai.chain(context, state, 'analyzeCalendar');
+    
+    // End the current chain
+    return false;
   }
 );
 

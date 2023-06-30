@@ -1,0 +1,39 @@
+Here is an adaptive card template for showing 1 to 10 search results to a user
+
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.4",
+    "body": [
+            {
+                "type": "TextBlock",
+                "text": "id 1",
+                "size": "Large",
+                "weight": "Bolder",
+                "style": "heading",
+                "wrap": true
+            },
+            {
+                "type": "TextBlock",
+                "text": "webUrl1 ",
+                "isSubtle": true,
+                "wrap": true
+            },
+            {
+                "type": "TextBlock",
+                "text": "summary 1",
+                "isSubtle": true,
+                "spacing": "None",
+                "wrap": true
+            }
+        ]
+}
+
+Here's a set of search results. The key is the id of the result:
+
+{{$searchResults}}
+
+Use the template to create a carousel of Adaptive Cards.
+Always replace the placeholder text, List n and Item n, with real data.
+
+AdaptiveCard:

@@ -1,0 +1,5 @@
+Here is an adaptive card template for showing 1 to 10 search results to a user
+Below is a set of calendar entries returned from the Microsoft Graph in JSON format. Review these entries and recommend to the user how they can improve their work life balance.
+
+{{$events}}
+

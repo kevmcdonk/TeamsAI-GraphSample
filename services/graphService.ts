@@ -57,6 +57,14 @@ export class GraphService {
         return mails;
     }
 
+    async getNextTwoWeeksCalendars() {
+        
+        const events = await this.graphClient.api("/me/calendarview?startdatetime=2023-06-30T20:42:15.509Z&enddatetime=2023-07-14T20:42:15.509Z")
+            .version("beta")
+            .get();
+        return events;
+    }
+
     async getSites(query: string) {
         const sites = await this.graphClient.api("/sites?search="+query)
             .version("beta")
@@ -106,6 +114,30 @@ export class GraphService {
         const searchResults = await this.graphClient.api('/search/query')
               .post(searchPost);
         return searchResults;
+    }
+
+
+    async getFileContents(sitePath: string, filePath: string): Promise<string> {
+        // sitePath example '/sites/conferences'
+        // filePath example 'general/commsverse/2023/No%20desk,%20no%20problem%20-%20empowering%20Frontline%20workers%20with%20Microsoft%20365.pptx'
+        // TODO: make tenant an env
+        
+        let siteMetadata = await this.graphClient.api(`/sites//mcdonnell.sharepoint.com:${sitePath}`).get();
+        let fileMetadata = await this.graphClient.api(`/sites/${siteMetadata.id}/drive/root:/${filePath}`).get();
+
+        var downloadLink = fileMetadata["@microsoft.graph.downloadUrl"];
+        /*
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", downloadLink, true);
+        xhr.onreadystatechange = function () {
+            if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                // do something with the responseText, which is if the file
+                // console.log(xhr.responseText);
+                return xhr.responseText.toString();
+            }
+        };
+        await xhr.send();*/
+        return 'Coming soon';
     }
 }
 
