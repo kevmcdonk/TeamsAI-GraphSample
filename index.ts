@@ -123,7 +123,7 @@ console.log("OpenAIEndpoint: " + config.openAIEndpoint);
 console.log("OpenAIKey: " + config.openAIKey);
 const planner = new AzureOpenAIPlanner({
   apiKey: config.openAIKey,
-  defaultModel: "GPT35Completions",
+  defaultModel: "gpt-graphsample",
   logRequests: true,
   endpoint: config.openAIEndpoint,
 });
@@ -260,7 +260,7 @@ app.ai.action(
     let events = await graphService.getNextTwoWeeksCalendars();
     state.conversation.value.events = events;
     await app.ai.chain(context, state, 'analyzeCalendar');
-    
+  
     // End the current chain
     return false;
   }
@@ -314,9 +314,10 @@ server.post("/api/messages", async (req, res) => {
   await adapter.process(req, res, async (context) => {
       console.log("incoming!");
       try {
-    await app.run(context);
+        await app.run(context);
       }
       catch(e) {
+        
         console.log(e);
       }
   });

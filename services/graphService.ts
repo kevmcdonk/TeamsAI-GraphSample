@@ -58,7 +58,7 @@ export class GraphService {
     }
 
     async getNextTwoWeeksCalendars() {
-        const events = await this.graphClient.api("/me/calendarview?startdatetime=2023-06-30T20:42:15.509Z&enddatetime=2023-07-02T20:42:15.509Z&$select=subject,bodyPreview,start,end,attendees")
+        const events = await this.graphClient.api("/me/calendarview?startdatetime=2023-07-01T20:42:15.509Z&enddatetime=2023-07-18T20:42:15.509Z&$select=subject,bodyPreview,start,end,attendees")
             .version("beta")
             .get();
         return events;

@@ -2,7 +2,7 @@
     "schema": 1,
     "description": "Chat with Teams Chef",
     "type": "completion",
-    "completion": {
+    "chat": {
     "max_tokens": 150,
     "temperature": 0.9,
     "top_p": 0.0,
