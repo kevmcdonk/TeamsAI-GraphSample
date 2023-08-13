@@ -105,7 +105,7 @@ export class GraphService {
                       queryString: searchQuery
                     },
                     "from": 0,
-                    "size": 10
+                    "size": 3
                   } 
             ]
         };

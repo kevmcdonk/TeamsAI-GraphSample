@@ -51,6 +51,7 @@ type TData = Record<string, any>;
 
 interface ConversationState extends DefaultConversationState {
   searchResults: any;
+  searchQuery: string;
   documentText: string;
   events: any;
 }
@@ -223,9 +224,7 @@ function createSiteCards(siteResponse): Attachment[] {
 app.ai.action(
   "searchFiles",
   async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
-    const searchQuery = data.query;
-    const graphService = new GraphService(state.temp.value.authToken);
-    const searchResults = await graphService.searchFiles(searchQuery);
+    
     /*const searchResultCards = createSearchCards(searchResults);
 
     await context.sendActivity({
@@ -233,11 +232,19 @@ app.ai.action(
       attachments: searchResultCards,
       attachmentLayout: AttachmentLayoutTypes.Carousel,
     });*/
-    state.conversation.value.searchResults = searchResults;
+    state.conversation.value.searchQuery = data.query;
     await app.ai.chain(context, state, 'summarizeSearch');
     return true;
   }
 );
+
+app.ai.prompts.addFunction('searchFilesForSearchQuery', async (context: TurnContext, state: ApplicationTurnState) => {
+  const conversation = state.conversation.value;
+  const graphService = new GraphService(state.temp.value.authToken);
+  const searchResults = await graphService.searchFiles(conversation.searchQuery);
+  console.log(JSON.stringify(searchResults));
+  return JSON.stringify(searchResults);
+});
 
 app.ai.action(
   "summariseDocument",
