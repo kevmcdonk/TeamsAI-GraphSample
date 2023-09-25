@@ -14,3 +14,4 @@ node_modules/
 
 # build
 lib/
+git-filter-repo
