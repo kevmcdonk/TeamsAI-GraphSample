@@ -53,6 +53,7 @@ interface ConversationState extends DefaultConversationState {
   searchResults: any;
   searchQuery: string;
   documentText: string;
+  docChunk: string;
   events: any;
 }
 
@@ -101,21 +102,6 @@ const onTurnErrorHandler = async (context: TurnContext, error: Error) => {
 // Set the onTurnError for the singleton CloudAdapter.
 adapter.onTurnError = onTurnErrorHandler;
 
-const loginUrl = process.env.INITIATE_LOGIN_ENDPOINT;
-const TeamsBotSsoPromptId = "TEAMS_BOT_SSO_PROMPT";
-const settings: TeamsBotSsoPromptSettings = {
-  scopes: ["User.Read", "Mail.Read"],
-  timeout: 900000,
-  endOnInvalidMessage: true,
-};
-
-const dialog = new TeamsBotSsoPrompt(
-  authConfig,
-  loginUrl,
-  TeamsBotSsoPromptId,
-  settings
-);
-
 const memoryStorage = new MemoryStorage();
 const userState = new UserState(memoryStorage);
 //this.dialogState = this.conversationState.createProperty("DialogState");
@@ -124,7 +110,7 @@ console.log("OpenAIEndpoint: " + config.openAIEndpoint);
 console.log("OpenAIKey: " + config.openAIKey);
 const planner = new AzureOpenAIPlanner({
   apiKey: config.openAIKey,
-  defaultModel: "gpt-graphsample",
+  defaultModel: "gpt-byod",
   logRequests: true,
   endpoint: config.openAIEndpoint,
 });
@@ -246,13 +232,23 @@ app.ai.prompts.addFunction('searchFilesForSearchQuery', async (context: TurnCont
   return JSON.stringify(searchResults);
 });
 
+app.ai.prompts.addFunction('summariseDocumentChunk', async (context: TurnContext, state: ApplicationTurnState) => {
+  const conversation = state.conversation.value;
+  const graphService = new GraphService(state.temp.value.authToken);
+  const searchResults = await graphService.searchFiles(conversation.searchQuery);
+  console.log(JSON.stringify(searchResults));
+  return JSON.stringify(searchResults);
+});
+
 app.ai.action(
   "summariseDocument",
   async (context: TurnContext, state: ApplicationTurnState, data: TData) => {
     const filePath = data.docLink;
     const graphService = new GraphService(state.temp.value.authToken);
     let fileContents = await graphService.getFileContents('/sites/Conferences', '/general/commsverse/2023/No%20desk,%20no%20problem%20-%20empowering%20Frontline%20workers%20with%20Microsoft%20365.pptx');
-    state.conversation.value.documentText = fileContents;
+    state.conversation.value.docChunk = 'Lorem ipsum dolor sit amet. Qui sint odit vel fugit harum aut soluta explicabo quo laborum assumenda et rerum voluptatem id obcaecati necessitatibus et tenetur quam. Et nostrum praesentium sed laudantium ratione qui quaerat rerum aut rerum unde sed repellat repudiandae. </p><p>A quaerat omnis eos voluptatem omnis eum laborum magnam eum pariatur dolorem. Ut necessitatibus explicabo At debitis rerum ea tempora sint et porro consequatur sed sapiente soluta sit dolor earum eos sunt iure. Et dolore laudantium ea eligendi dolorum ex veritatis nesciunt? Et corporis dolorum est inventore maiores et possimus consequatur et autem adipisci sit laudantium dicta id alias cumque. </p><p>Et libero perferendis qui molestias asperiores qui numquam molestiae. Aut fuga iusto quo labore aperiam ut tenetur enim aut quaerat doloremque! Vel ipsa dolorem id dicta soluta ad voluptatem nesciunt id odit quasi et eius asperiores.';
+    let response = await app.ai.prompts.invokeFunction(context, state, 'summariseDocumentChunk');
+    state.conversation.value.documentText = response;
     await app.ai.chain(context, state, 'summarizeDocument');
     
     // End the current chain
