@@ -15,3 +15,4 @@ node_modules/
 # build
 lib/
 git-filter-repo
+"Prompts/chat/temp.json" 
